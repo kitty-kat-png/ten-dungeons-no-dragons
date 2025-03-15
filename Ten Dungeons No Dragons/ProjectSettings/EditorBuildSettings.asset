@@ -8,4 +8,10 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/Game.unity
     guid: 2cda990e2423bbf4892e6590ba056729
+  - enabled: 1
+    path: Assets/Scenes/Main Menu.unity
+    guid: 9ad54ae598ee9774897fba5f448a55f7
+  - enabled: 1
+    path: Assets/Scenes/Underwater Dungeon.unity
+    guid: 611793fbef3cb27448e10e1571c9f0c0
   m_configObjects: {}
