@@ -15,8 +15,7 @@ public class PlayerController : MonoBehaviour, IHittable
 
     private Rigidbody2D rigidbody;
     private Vector2 movementInput;
-    //public GameManager gameManager;
-    //public SceneManager sceneManager;
+    public GameManager gameManager;
 
     private float horizontal; //Inputs
     private float vertical;
@@ -36,6 +35,8 @@ public class PlayerController : MonoBehaviour, IHittable
 
     public GameObject projectilePrefab;
     public Transform arrowEmitter;
+
+    private List<string> inventory = new List<string>();
 
     private void Awake()
     {
@@ -173,5 +174,37 @@ public class PlayerController : MonoBehaviour, IHittable
         Gizmos.DrawWireSphere((transform.position + (Vector3)(directionVector * meleeDistance)), meleeRadius);
         Gizmos.color = Color.blue;
         Gizmos.DrawLine(transform.position, transform.position + (Vector3)(directionVector * 3));
+    }
+
+    public void AddItemToInventory(string item)
+    {
+        if (!inventory.Contains(item))
+        {
+            inventory.Add(item);
+            Debug.Log(item + " added to inventory");
+        }
+    }
+
+    public bool HasItemInInventory(string item)
+    {
+        return inventory.Contains(item);
+    }
+
+    public void DisplayInventory()
+    {
+        Debug.Log("Inventory: ");
+        foreach (var item in inventory)
+        {
+            Debug.Log(item);
+        }
+    }
+
+    private void OnTriggerEnter2D(Collider2D other)
+    {
+        if (other.CompareTag("Item"))
+        {
+            AddItemToInventory(other.gameObject.name);
+            Destroy(other.gameObject);
+        }
     }
 }
