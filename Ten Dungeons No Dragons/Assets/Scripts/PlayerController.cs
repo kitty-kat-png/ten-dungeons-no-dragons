@@ -83,6 +83,21 @@ public class PlayerController : MonoBehaviour
         rigidbody.velocity = dashDirection * dashSpeed;
     }
 
+    public void TakeDamage(int damage)
+    {
+        health -= damage;
+        if (health <= 0)
+        {
+            Die();
+        }
+    }
+
+    private void Die()
+    {
+        Debug.Log("Player died");
+        //SceneManager.LoadScene("GameOver");
+    }
+
     private void HandleMeleeAttack()
     {
         if (Input.GetButtonDown("Fire1") && meleeTimer <= 0f) //Fire1 is left mouse button
