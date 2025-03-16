@@ -1,8 +1,9 @@
 using System.Collections;
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 
-public class PlayerController : MonoBehaviour
+public class PlayerController : MonoBehaviour, IHittable
 {
     public float moveSpeed = 3f; //Move speed
     public float dashSpeed = 5f; //Dash speed
@@ -23,13 +24,18 @@ public class PlayerController : MonoBehaviour
     public int lives;
     public int health;
 
+    public int meleeDamage = 1;
+    public float meleeDistance = 1f;
+    public float meleeRadius = 1f;
     public float meleeCooldown = 1f;
     public float rangedCooldown = 1f;
     private float meleeTimer = 0f;
     private float rangedTimer = 0f;
 
+    private Vector2 directionVector = Vector2.up;
+
     public GameObject projectilePrefab;
-    public Transform shootArrow;
+    public Transform arrowEmitter;
 
     private void Awake()
     {
@@ -38,7 +44,7 @@ public class PlayerController : MonoBehaviour
 
     private void Update()
     {
-        HandleMovement();
+        UpdateDirectionVector();
         HandleMeleeAttack();
         HandleRangedAttack();
         HandleDash();
@@ -48,6 +54,11 @@ public class PlayerController : MonoBehaviour
         if (rangedTimer > 0f) rangedTimer -= Time.deltaTime;
     }
 
+    private void FixedUpdate()
+    {
+        HandleMovement();
+    }
+
     private void HandleMovement()
     {
         float horizontal = Input.GetAxis("Horizontal");
@@ -55,8 +66,18 @@ public class PlayerController : MonoBehaviour
 
         movementInput = new Vector2(horizontal, vertical);
 
-        Vector2 move = movementInput * moveSpeed * Time.deltaTime;
+        Vector2 move = movementInput * moveSpeed * Time.fixedDeltaTime;
         rigidbody.MovePosition(rigidbody.position + move);
+    }
+
+    private void UpdateDirectionVector()
+    {
+        Vector2 inputVec = new Vector2(Input.GetAxisRaw("Horizontal"), Input.GetAxisRaw("Vertical"));
+
+        if(inputVec.magnitude > 0)
+        {
+            directionVector = inputVec.normalized;
+        }
     }
 
     private void HandleDash()
@@ -92,6 +113,15 @@ public class PlayerController : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Implementation of IHittable
+    /// </summary>
+    /// <param name="damage"></param>
+    public void Hit(int damage)
+    {
+        TakeDamage(damage);
+    }
+
     private void Die()
     {
         Debug.Log("Player died");
@@ -111,6 +141,7 @@ public class PlayerController : MonoBehaviour
     {
         if (Input.GetButtonDown("Fire2") && rangedTimer <= 0f) //Fire2 is right mouse button
         {
+            arrowEmitter.up = directionVector;
             RangedAttack();
             rangedTimer = rangedCooldown;
         }
@@ -119,13 +150,13 @@ public class PlayerController : MonoBehaviour
     private void MeleeAttack()
     {
         Debug.Log("Melee Attack");
-        Collider2D[] hitEnemies = Physics2D.OverlapCircleAll(transform.position, 1f); //Melee attack range
+        Collider2D[] colliders = Physics2D.OverlapCircleAll((Vector2)transform.position + (directionVector * meleeDistance), meleeRadius); //Melee attack range
 
-        foreach (Collider2D enemy in hitEnemies)
+        foreach (Collider2D collider in colliders)
         {
-            if (enemy.CompareTag("Enemy"))
+            if(collider.transform.TryGetComponent<IHittable>(out IHittable hittable))
             {
-                Debug.Log("Hit " + enemy.name);
+                hittable.Hit(meleeDamage);
             }
         }
     }
@@ -133,11 +164,14 @@ public class PlayerController : MonoBehaviour
     private void RangedAttack()
     {
         Debug.Log("Ranged attack");
-        GameObject projectile = Instantiate(projectilePrefab, shootArrow.position, Quaternion.identity);
-        Rigidbody2D rigidbodyProjectile = projectile.GetComponent<Rigidbody2D>();
-        if (rigidbodyProjectile != null)
-        {
-            rigidbodyProjectile.velocity = transform.right * 10f; //Projectile speed
-        }
+        GameObject projectile = Instantiate(projectilePrefab, arrowEmitter.position, arrowEmitter.rotation);
+    }
+
+    private void OnDrawGizmos()
+    {
+        Gizmos.color = Color.green;
+        Gizmos.DrawWireSphere((transform.position + (Vector3)(directionVector * meleeDistance)), meleeRadius);
+        Gizmos.color = Color.blue;
+        Gizmos.DrawLine(transform.position, transform.position + (Vector3)(directionVector * 3));
     }
 }
