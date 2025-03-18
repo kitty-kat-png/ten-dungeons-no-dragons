@@ -11,8 +11,8 @@ TagManager:
   - 
   - Water
   - UI
-  - 
-  - 
+  - Player
+  - Player Weapons
   - 
   - 
   - 
@@ -43,4 +43,13 @@ TagManager:
     locked: 0
   - name: Default
     uniqueID: 0
+    locked: 0
+  - name: Weapons
+    uniqueID: 2741537945
+    locked: 0
+  - name: Characters
+    uniqueID: 2063240123
+    locked: 0
+  - name: Player
+    uniqueID: 1663200519
     locked: 0

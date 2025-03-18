@@ -2,9 +2,15 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class PlayerController : MonoBehaviour, IHittable
 {
+    public GameManager gameManager;
+
+    public int lives;
+    public int health;
+
     public float moveSpeed = 3f; //Move speed
     public float dashSpeed = 5f; //Dash speed
 
@@ -13,28 +19,31 @@ public class PlayerController : MonoBehaviour, IHittable
     private float dashTimeLeft = 0f;
     private float dashCooldownTimeLeft = 0f;
 
-    private Rigidbody2D rb2d;
-    private Vector2 movementInput;
-    public GameManager gameManager;
-
-    private float horizontal; //Inputs
-    private float vertical;
-
-    public int lives;
-    public int health;
-
     public int meleeDamage = 1;
     public float meleeDistance = 1f;
     public float meleeRadius = 1f;
     public float meleeCooldown = 1f;
     public float rangedCooldown = 1f;
+
+    public GameObject projectilePrefab;
+    public Transform arrowEmitter;
+
+    // Unity events
+
+    public UnityEvent OnMelee;
+    public UnityEvent OnRanged;
+    public UnityEvent OnDash;
+    public UnityEvent OnDie;
+
+    // Private
+
+    private Rigidbody2D rb2d;
+    private Vector2 movementInput;
+    
     private float meleeTimer = 0f;
     private float rangedTimer = 0f;
 
     private Vector2 directionVector = Vector2.up;
-
-    public GameObject projectilePrefab;
-    public Transform arrowEmitter;
 
     private List<string> inventory = new List<string>();
 
@@ -79,6 +88,8 @@ public class PlayerController : MonoBehaviour, IHittable
         {
             directionVector = inputVec.normalized;
         }
+
+        arrowEmitter.up = directionVector;
     }
 
     private void HandleDash()
@@ -142,7 +153,6 @@ public class PlayerController : MonoBehaviour, IHittable
     {
         if (Input.GetButtonDown("Fire2") && rangedTimer <= 0f) //Fire2 is right mouse button
         {
-            arrowEmitter.up = directionVector;
             RangedAttack();
             rangedTimer = rangedCooldown;
         }

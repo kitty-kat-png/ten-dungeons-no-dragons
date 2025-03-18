@@ -32,7 +32,7 @@ public class EnemyBase : MonoBehaviour, IHittable
     protected Vector3 currentDestination;
     protected float idleTimer = 0;
 
-    private void Awake()
+    protected virtual void Awake()
     {
         navMeshAgent.updateRotation = false;
         navMeshAgent.updateUpAxis = false;
@@ -40,12 +40,12 @@ public class EnemyBase : MonoBehaviour, IHittable
         currentDestination = patrolPoints[0].position;
     }
 
-    private void Start()
+    protected virtual void Start()
     {
         playerTransform = GameObject.FindGameObjectWithTag("Player").transform;
     }
 
-    private void Update()
+    protected virtual void Update()
     {
         switch(currentBehaviour)
         {
@@ -67,7 +67,7 @@ public class EnemyBase : MonoBehaviour, IHittable
         }
     }
 
-    protected void UpdatePatrol()
+    protected virtual void UpdatePatrol()
     {
         navMeshAgent.speed = patrolSpeed;
 
@@ -88,7 +88,7 @@ public class EnemyBase : MonoBehaviour, IHittable
         navMeshAgent.SetDestination(currentDestination);
     }
 
-    protected void UpdateChase()
+    protected virtual void UpdateChase()
     {
         navMeshAgent.speed = chaseSpeed;
         navMeshAgent.SetDestination(playerTransform.position);
@@ -100,16 +100,17 @@ public class EnemyBase : MonoBehaviour, IHittable
         }
     }
 
-    protected void UpdateAttack()
+    protected virtual void UpdateAttack()
     {
         //do attack
+        Attack();
 
         //wait for attack animation
 
         currentBehaviour = EnemyBehaviour.Idle;
     }
 
-    protected void UpdateIdle()
+    protected virtual void UpdateIdle()
     {
         idleTimer += Time.deltaTime;
         if (idleTimer > postAttackIdleTime)
@@ -119,7 +120,7 @@ public class EnemyBase : MonoBehaviour, IHittable
         }
     }
 
-    public void Die()
+    public virtual void Die()
     {
         Destroy(gameObject);
     }
@@ -129,17 +130,17 @@ public class EnemyBase : MonoBehaviour, IHittable
         Debug.Log(gameObject.name + "Attacking");
     }
 
-    protected bool CheckChaseRange()
+    protected virtual bool CheckChaseRange()
     {
         return Vector2.Distance(transform.position, playerTransform.position) < chaseRange;        
     }
 
-    protected bool CheckAttackRange()
+    protected virtual bool CheckAttackRange()
     {
         return Vector2.Distance(transform.position, playerTransform.position) < attackRange;
     }
 
-    public void Hit(int damage)
+    public virtual void Hit(int damage)
     {
         health -= damage;
 
@@ -147,5 +148,29 @@ public class EnemyBase : MonoBehaviour, IHittable
         {
             Die();
         }
+    }
+
+    protected virtual void OnDrawGizmos()
+    {
+        if(currentDestination != Vector3.zero)
+        {
+            Gizmos.color = Color.green;
+            Gizmos.DrawLine(transform.position, currentDestination);
+        }
+
+        Gizmos.color = Color.blue;
+        for (int i=0; i<patrolPoints.Count; i++)
+        {
+            Transform p1 = patrolPoints[i], p2 = patrolPoints[(i+1) % patrolPoints.Count];
+            if(p1 != null && p2 != null)
+            {
+                Gizmos.DrawLine(p1.position, p2.position);
+            }
+        }
+
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(transform.position, attackRange);
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireSphere(transform.position, chaseRange);
     }
 }
