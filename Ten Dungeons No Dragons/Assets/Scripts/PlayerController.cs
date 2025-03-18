@@ -42,6 +42,7 @@ public class PlayerController : MonoBehaviour, IHittable
     
     private float meleeTimer = 0f;
     private float rangedTimer = 0f;
+    private bool dead;
 
     private Vector2 directionVector = Vector2.up;
 
@@ -54,27 +55,34 @@ public class PlayerController : MonoBehaviour, IHittable
 
     private void Update()
     {
-        UpdateDirectionVector();
-        HandleMeleeAttack();
-        HandleRangedAttack();
-        HandleDash();
+        if(!dead)
+        {
+            UpdateDirectionVector();
+            HandleMeleeAttack();
+            HandleRangedAttack();
+            HandleDash();
 
-        //Cooldown timers
-        if (meleeTimer > 0f) meleeTimer -= Time.deltaTime;
-        if (rangedTimer > 0f) rangedTimer -= Time.deltaTime;
+            //Cooldown timers
+            if (meleeTimer > 0f) meleeTimer -= Time.deltaTime;
+            if (rangedTimer > 0f) rangedTimer -= Time.deltaTime;
+        }
     }
 
     private void FixedUpdate()
-    {
-        HandleMovement();
-    }
-
-    private void HandleMovement()
     {
         float horizontal = Input.GetAxis("Horizontal");
         float vertical = Input.GetAxis("Vertical");
 
         movementInput = new Vector2(horizontal, vertical);
+
+        if (!dead)
+        {
+            HandleMovement();
+        }
+    }
+
+    private void HandleMovement()
+    {
 
         Vector2 move = movementInput * moveSpeed * Time.fixedDeltaTime;
         rb2d.MovePosition(rb2d.position + move);
@@ -137,6 +145,7 @@ public class PlayerController : MonoBehaviour, IHittable
     private void Die()
     {
         Debug.Log("Player died");
+        dead = true;
         //SceneManager.LoadScene("GameOver");
     }
 

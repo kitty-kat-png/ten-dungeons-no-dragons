@@ -31,6 +31,7 @@ public class EnemyBase : MonoBehaviour, IHittable
     protected int currentPatrolIndex = 0;
     protected Vector3 currentDestination;
     protected float idleTimer = 0;
+    protected Vector2 directionVector = Vector2.up;
 
     protected virtual void Awake()
     {
@@ -47,7 +48,9 @@ public class EnemyBase : MonoBehaviour, IHittable
 
     protected virtual void Update()
     {
-        switch(currentBehaviour)
+        UpdateDirectionVector();
+
+        switch (currentBehaviour)
         {
             case EnemyBehaviour.Patrol:
                 UpdatePatrol();
@@ -65,6 +68,11 @@ public class EnemyBase : MonoBehaviour, IHittable
                 Debug.LogError("EnemyBehaviour invalid");
                 break;
         }
+    }
+
+    protected virtual void UpdateDirectionVector()
+    {
+        directionVector = (playerTransform.position - transform.position).normalized;
     }
 
     protected virtual void UpdatePatrol()

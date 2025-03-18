@@ -4,32 +4,26 @@ using UnityEngine;
 
 public class RangedEnemy : EnemyBase
 {
-    public float lineupTolerance = .3f;
+    public GameObject projectilePrefab;
+    public Transform arrowEmitter;
 
-    private float xDistance = 1f;
-    private float yDistance = 1f;
-
-    protected override bool CheckAttackRange()
+    protected override void Attack()
     {
-        return (CheckXLineup() || CheckYLineup()) && Vector2.Distance(playerTransform.position, transform.position) < attackRange;
+        GameObject projectile = Instantiate(projectilePrefab, arrowEmitter.position, arrowEmitter.rotation);
     }
 
-    private bool CheckXLineup()
+    protected override void UpdateDirectionVector()
     {
-        return (xDistance = Mathf.Abs(playerTransform.position.x - transform.position.x)) < lineupTolerance;
-    }
+        base.UpdateDirectionVector();
 
-    private bool CheckYLineup()
-    {
-        return (yDistance = Mathf.Abs(playerTransform.position.y - transform.position.y)) < lineupTolerance;
+        arrowEmitter.up = directionVector;
     }
 
     protected override void OnDrawGizmos()
     {
         base.OnDrawGizmos();
 
-        Gizmos.color = new Color(1.0f, 0.5f, 0.5f, 0.5f);
-        Gizmos.DrawCube(transform.position, new Vector3(lineupTolerance, attackRange * 2, 1f));
-        Gizmos.DrawCube(transform.position, new Vector3(attackRange * 2, lineupTolerance, 1f));
+        Gizmos.color = Color.green;
+        Gizmos.DrawLine(transform.position, transform.position + (Vector3)(directionVector * attackRange));
     }
 }

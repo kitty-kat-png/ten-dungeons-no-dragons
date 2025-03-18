@@ -10,15 +10,6 @@ public class MeleeEnemy : EnemyBase
     public float meleeDistance = 1f;
     public float meleeRadius = 1f;
 
-    Vector2 directionVector = Vector2.up;
-
-    protected override void Update()
-    {
-        directionVector = (playerTransform.position - transform.position).normalized;
-
-        base.Update();
-    }
-
     protected override void Attack()
     {
         Debug.Log(gameObject.name +  " Melee Attack");
