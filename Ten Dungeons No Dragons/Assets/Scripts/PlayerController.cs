@@ -13,7 +13,7 @@ public class PlayerController : MonoBehaviour, IHittable
     private float dashTimeLeft = 0f;
     private float dashCooldownTimeLeft = 0f;
 
-    private Rigidbody2D rigidbody;
+    private Rigidbody2D rb2d;
     private Vector2 movementInput;
     public GameManager gameManager;
 
@@ -40,7 +40,7 @@ public class PlayerController : MonoBehaviour, IHittable
 
     private void Awake()
     {
-        rigidbody = GetComponent<Rigidbody2D>();
+        rb2d = GetComponent<Rigidbody2D>();
     }
 
     private void Update()
@@ -68,7 +68,7 @@ public class PlayerController : MonoBehaviour, IHittable
         movementInput = new Vector2(horizontal, vertical);
 
         Vector2 move = movementInput * moveSpeed * Time.fixedDeltaTime;
-        rigidbody.MovePosition(rigidbody.position + move);
+        rb2d.MovePosition(rb2d.position + move);
     }
 
     private void UpdateDirectionVector()
@@ -92,7 +92,7 @@ public class PlayerController : MonoBehaviour, IHittable
         if (dashTimeLeft > 0)
         {
             dashTimeLeft -= Time.deltaTime;
-            rigidbody.velocity = movementInput.normalized * dashSpeed;
+            rb2d.velocity = movementInput.normalized * dashSpeed;
         }
     }
 
@@ -102,7 +102,7 @@ public class PlayerController : MonoBehaviour, IHittable
         dashTimeLeft = dashDuration;
 
         Vector2 dashDirection = movementInput.normalized;
-        rigidbody.velocity = dashDirection * dashSpeed;
+        rb2d.velocity = dashDirection * dashSpeed;
     }
 
     public void TakeDamage(int damage)

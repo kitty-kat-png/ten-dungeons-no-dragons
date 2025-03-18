@@ -9,12 +9,12 @@ public class MiniRat : MonoBehaviour
     public int health = 5;
 
     private Transform player;
-    private Rigidbody2D rigidbody;
+    private Rigidbody2D rb2d;
 
     private void Start()
     {
         player = GameObject.FindGameObjectWithTag("Player").transform;
-        rigidbody = GetComponent<Rigidbody2D>();
+        rb2d = GetComponent<Rigidbody2D>();
     }
 
     private void Update()
@@ -27,7 +27,7 @@ public class MiniRat : MonoBehaviour
         if (player != null)
         {
             Vector2 direction = (player.position - transform.position).normalized;
-            rigidbody.velocity = direction * moveSpeed;
+            rb2d.velocity = direction * moveSpeed;
         }
     }
 
