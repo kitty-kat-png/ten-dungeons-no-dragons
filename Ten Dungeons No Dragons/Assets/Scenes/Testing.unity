@@ -30345,6 +30345,10 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 3075960524789345604, guid: b12f2017af716354588b3932459bd61e, type: 3}
+      propertyPath: patrolPoints.Array.size
+      value: 7
+      objectReference: {fileID: 0}
+    - target: {fileID: 3075960524789345604, guid: b12f2017af716354588b3932459bd61e, type: 3}
       propertyPath: patrolPoints.Array.data[0]
       value: 
       objectReference: {fileID: 1084439801}
@@ -30392,6 +30396,10 @@ PrefabInstance:
     - target: {fileID: 1934090351002853949, guid: 148ab4a31a0fe604aa7cbf563c36ee36, type: 3}
       propertyPath: m_Name
       value: Melee Enemy
+      objectReference: {fileID: 0}
+    - target: {fileID: 2671693810895750408, guid: 148ab4a31a0fe604aa7cbf563c36ee36, type: 3}
+      propertyPath: patrolPoints.Array.size
+      value: 4
       objectReference: {fileID: 0}
     - target: {fileID: 2671693810895750408, guid: 148ab4a31a0fe604aa7cbf563c36ee36, type: 3}
       propertyPath: patrolPoints.Array.data[0]
