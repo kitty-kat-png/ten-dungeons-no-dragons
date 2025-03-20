@@ -75,16 +75,18 @@ public class PlayerController : MonoBehaviour, IHittable, ISubscriber<UpgradePic
 
     private void Awake()
     {
-        Subscribe();
-
         rb2d = GetComponent<Rigidbody2D>();
-
-        InitializeUpgrades();
 
         health = maxHealth;
         OnHealthChanged.Invoke(health);
     }
 
+    private void Start()
+    {
+        Subscribe();
+
+        InitializeUpgrades();
+    }
     private void OnDestroy()
     {
         Unsubscribe();
