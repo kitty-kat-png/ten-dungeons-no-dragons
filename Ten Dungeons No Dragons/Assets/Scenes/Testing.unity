@@ -35839,7 +35839,15 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 1978427427777198177, guid: 600da8058c5e9374b90bfd9cb15eba8a, type: 3}
+      propertyPath: OnHealthChanged.m_PersistentCalls.m_Calls.Array.size
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 1978427427777198177, guid: 600da8058c5e9374b90bfd9cb15eba8a, type: 3}
       propertyPath: OnHealthCHanged.m_PersistentCalls.m_Calls.Array.data[0].m_Target
+      value: 
+      objectReference: {fileID: 938970665}
+    - target: {fileID: 1978427427777198177, guid: 600da8058c5e9374b90bfd9cb15eba8a, type: 3}
+      propertyPath: OnHealthChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Target
       value: 
       objectReference: {fileID: 938970665}
     - target: {fileID: 1978427427777198177, guid: 600da8058c5e9374b90bfd9cb15eba8a, type: 3}
@@ -35847,7 +35855,15 @@ PrefabInstance:
       value: 2
       objectReference: {fileID: 0}
     - target: {fileID: 1978427427777198177, guid: 600da8058c5e9374b90bfd9cb15eba8a, type: 3}
+      propertyPath: OnHealthChanged.m_PersistentCalls.m_Calls.Array.data[0].m_CallState
+      value: 2
+      objectReference: {fileID: 0}
+    - target: {fileID: 1978427427777198177, guid: 600da8058c5e9374b90bfd9cb15eba8a, type: 3}
       propertyPath: OnHealthCHanged.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
+      value: HandleHealthChanged
+      objectReference: {fileID: 0}
+    - target: {fileID: 1978427427777198177, guid: 600da8058c5e9374b90bfd9cb15eba8a, type: 3}
+      propertyPath: OnHealthChanged.m_PersistentCalls.m_Calls.Array.data[0].m_MethodName
       value: HandleHealthChanged
       objectReference: {fileID: 0}
     - target: {fileID: 1978427427777198177, guid: 600da8058c5e9374b90bfd9cb15eba8a, type: 3}
@@ -35855,7 +35871,15 @@ PrefabInstance:
       value: HealthUI, Assembly-CSharp
       objectReference: {fileID: 0}
     - target: {fileID: 1978427427777198177, guid: 600da8058c5e9374b90bfd9cb15eba8a, type: 3}
+      propertyPath: OnHealthChanged.m_PersistentCalls.m_Calls.Array.data[0].m_TargetAssemblyTypeName
+      value: HealthUI, Assembly-CSharp
+      objectReference: {fileID: 0}
+    - target: {fileID: 1978427427777198177, guid: 600da8058c5e9374b90bfd9cb15eba8a, type: 3}
       propertyPath: OnHealthCHanged.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
+      value: UnityEngine.Object, UnityEngine
+      objectReference: {fileID: 0}
+    - target: {fileID: 1978427427777198177, guid: 600da8058c5e9374b90bfd9cb15eba8a, type: 3}
+      propertyPath: OnHealthChanged.m_PersistentCalls.m_Calls.Array.data[0].m_Arguments.m_ObjectArgumentAssemblyTypeName
       value: UnityEngine.Object, UnityEngine
       objectReference: {fileID: 0}
     - target: {fileID: 2235070638310839872, guid: 600da8058c5e9374b90bfd9cb15eba8a, type: 3}
