@@ -3,13 +3,20 @@ using System.Collections.Generic;
 using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.Events;
+using PubSub;
 
-public class PlayerController : MonoBehaviour, IHittable
+public class PlayerController : MonoBehaviour, IHittable, ISubscriber<UpgradePickedUp>
 {
     public GameManager gameManager;
 
-    public int lives;
-    public int health;
+    public int lives = 1;
+    public int health = 3;
+    public int maxHealth = 3;
+    public int damageReduction = 0;
+    public float dodgeChance = 0f;
+    public float dodgeChancePerStack = 0.15f;
+    public int maxSecondWinds = 0;
+    private int currentSecondWindsLeft = 0;
 
     public float moveSpeed = 3f; //Move speed
     public float dashSpeed = 5f; //Dash speed
@@ -19,7 +26,19 @@ public class PlayerController : MonoBehaviour, IHittable
     private float dashTimeLeft = 0f;
     private float dashCooldownTimeLeft = 0f;
 
+    public float rageTime = 8f;
+    private float rageTimer = 0f;
+
     public int meleeDamage = 1;
+    /// <summary>
+    /// Amount of damage done whle raging. 
+    /// This starts at zero because it gets added to for each rage upgrade
+    /// in the upgrade inventory so we could do stacking upgrades if we wanted
+    /// </summary>
+    public int rageMeleeDamage = 0;
+    public int rageDamagePerStack = 2;
+    public int maxExtraAttacks = 0;
+    private int currentExtraAttacksLeft = 0;
     public float meleeDistance = 1f;
     public float meleeRadius = 1f;
     public float meleeCooldown = 1f;
@@ -34,6 +53,10 @@ public class PlayerController : MonoBehaviour, IHittable
     public UnityEvent OnRanged;
     public UnityEvent OnDash;
     public UnityEvent OnDie;
+    public UnityEvent<int> OnHealthChanged;
+    public UnityEvent OnRage;
+    public UnityEvent OnSecondWind;
+    public UnityEvent OnDodge;
 
     // Private
 
@@ -42,6 +65,8 @@ public class PlayerController : MonoBehaviour, IHittable
     
     private float meleeTimer = 0f;
     private float rangedTimer = 0f;
+
+    private bool raging = false;
     private bool dead;
 
     private Vector2 directionVector = Vector2.up;
@@ -50,7 +75,19 @@ public class PlayerController : MonoBehaviour, IHittable
 
     private void Awake()
     {
+        Subscribe();
+
         rb2d = GetComponent<Rigidbody2D>();
+
+        InitializeUpgrades();
+
+        health = maxHealth;
+        OnHealthChanged.Invoke(health);
+    }
+
+    private void OnDestroy()
+    {
+        Unsubscribe();
     }
 
     private void Update()
@@ -61,6 +98,8 @@ public class PlayerController : MonoBehaviour, IHittable
             HandleMeleeAttack();
             HandleRangedAttack();
             HandleDash();
+            HandleRage();
+            HandleSecondWind();
 
             //Cooldown timers
             if (meleeTimer > 0f) meleeTimer -= Time.deltaTime;
@@ -102,7 +141,7 @@ public class PlayerController : MonoBehaviour, IHittable
 
     private void HandleDash()
     {
-        if (Input.GetKeyDown(KeyCode.LeftShift) && dashCooldownTimeLeft <= 0f) //Left shift to dash
+        if (Input.GetKeyDown(KeyCode.LeftShift) && dashCooldownTimeLeft <= 0f && UpgradeManager.Instance.GetOwnedUpgrades().Contains(UpgradeType.Dash)) //Left shift to dash
         {
             Dash();
             dashCooldownTimeLeft = dashCooldown;
@@ -115,6 +154,36 @@ public class PlayerController : MonoBehaviour, IHittable
         }
     }
 
+    private void HandleRage()
+    {
+        if(Input.GetKeyDown(KeyCode.F) && UpgradeManager.Instance.GetOwnedUpgrades().Contains(UpgradeType.Rage))
+        {
+            raging = true;
+            rageTimer = rageTime;
+            OnRage.Invoke();
+        }
+
+        if(raging)
+        {
+            rageTimer -= Time.deltaTime;
+            if(rageTimer < 0)
+            {
+                raging = false;
+            }
+        }
+    }
+
+    private void HandleSecondWind()
+    {
+        if(Input.GetKeyDown(KeyCode.Q) && currentSecondWindsLeft > 0)
+        {
+            health = maxHealth;
+            currentSecondWindsLeft -= 1;
+            OnHealthChanged.Invoke(health);
+            OnSecondWind.Invoke();
+        }
+    }
+
     private void Dash()
     {
         Debug.Log("Dashing");
@@ -122,11 +191,14 @@ public class PlayerController : MonoBehaviour, IHittable
 
         Vector2 dashDirection = movementInput.normalized;
         rb2d.velocity = dashDirection * dashSpeed;
+
+        OnDash.Invoke();
     }
 
     public void TakeDamage(int damage)
     {
-        health -= damage;
+        health -= (damage - (raging ? damageReduction : 0));
+        OnHealthChanged.Invoke(health);
         if (health <= 0)
         {
             Die();
@@ -139,28 +211,44 @@ public class PlayerController : MonoBehaviour, IHittable
     /// <param name="damage"></param>
     public void Hit(int damage)
     {
-        TakeDamage(damage);
+        float random = Random.value + .01f; // .01f to make it impossible to dodge if dodgeChance is 0
+        if(random > dodgeChance)
+        {
+            TakeDamage(damage);
+            OnDodge.Invoke();
+        }
     }
 
     private void Die()
     {
         Debug.Log("Player died");
         dead = true;
-        //SceneManager.LoadScene("GameOver");
+        OnDie.Invoke();
     }
 
     private void HandleMeleeAttack()
     {
-        if (Input.GetButtonDown("Fire1") && meleeTimer <= 0f) //Fire1 is left mouse button
+        if (Input.GetButtonDown("Fire1") && (meleeTimer <= 0f || currentExtraAttacksLeft > 0)) //Fire1 is left mouse button
         {
+            if(meleeTimer > 0f)
+            {
+                currentExtraAttacksLeft -= 1;
+            }
+
             MeleeAttack();
+
+            if(meleeTimer <= 0f)
+            {
+                currentExtraAttacksLeft = maxExtraAttacks;
+            }
+
             meleeTimer = meleeCooldown;
         }
     }
 
     private void HandleRangedAttack()
     {
-        if (Input.GetButtonDown("Fire2") && rangedTimer <= 0f) //Fire2 is right mouse button
+        if (Input.GetButtonDown("Fire2") && rangedTimer <= 0f && !raging) //Fire2 is right mouse button
         {
             RangedAttack();
             rangedTimer = rangedCooldown;
@@ -176,15 +264,43 @@ public class PlayerController : MonoBehaviour, IHittable
         {
             if(collider.transform.TryGetComponent<IHittable>(out IHittable hittable))
             {
-                hittable.Hit(meleeDamage);
+                hittable.Hit(raging ? rageMeleeDamage : meleeDamage);
             }
         }
+
+        OnMelee.Invoke();
     }
 
     private void RangedAttack()
     {
         Debug.Log("Ranged attack");
         GameObject projectile = Instantiate(projectilePrefab, arrowEmitter.position, arrowEmitter.rotation);
+        OnRanged.Invoke();
+    }
+
+    private void InitializeUpgrades()
+    {
+        List<UpgradeType> ownedUpgrades = UpgradeManager.Instance.GetOwnedUpgrades();
+        for (int i = 0; i < ownedUpgrades.Count; i++)
+        {
+            switch (ownedUpgrades[i])
+            {
+                case UpgradeType.Rage:
+                    rageMeleeDamage += rageDamagePerStack;
+                    break;
+                case UpgradeType.ExtraAttack:
+                    maxExtraAttacks += 1;
+                    currentExtraAttacksLeft = maxExtraAttacks;
+                    break;
+                case UpgradeType.Evasion:
+                    dodgeChance += dodgeChancePerStack;
+                    break;
+                case UpgradeType.SecondWind:
+                    maxSecondWinds += 1;
+                    currentSecondWindsLeft = maxSecondWinds;
+                    break;
+            }
+        }
     }
 
     private void OnDrawGizmos()
@@ -218,12 +334,34 @@ public class PlayerController : MonoBehaviour, IHittable
         }
     }
 
-    private void OnTriggerEnter2D(Collider2D other)
+    public void Subscribe()
     {
-        if (other.CompareTag("Item"))
+        PubSub.PubSub.Instance.Subscribe<UpgradePickedUp>(this);
+    }
+
+    public void Unsubscribe()
+    {
+        PubSub.PubSub.Instance.Unsubscribe<UpgradePickedUp>(this);
+    }
+
+    public void HandleEvent(UpgradePickedUp evt)
+    {
+        switch (evt.upgradeType)
         {
-            AddItemToInventory(other.gameObject.name);
-            Destroy(other.gameObject);
+            case UpgradeType.Rage:
+                rageMeleeDamage += rageDamagePerStack;
+                break;
+            case UpgradeType.ExtraAttack:
+                maxExtraAttacks += 1;
+                currentExtraAttacksLeft = maxExtraAttacks;
+                break;
+            case UpgradeType.Evasion:
+                dodgeChance += dodgeChancePerStack;
+                break;
+            case UpgradeType.SecondWind:
+                maxSecondWinds += 1;
+                currentSecondWindsLeft = maxSecondWinds;
+                break;
         }
     }
 }
