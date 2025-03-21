@@ -7,10 +7,16 @@ public class GameManager : MonoBehaviour
 {
     private int currentSceneIndex = 0;
     private bool isInFinalFight = false;
+    private EventManager eventManager; //Referencing EventManager
 
     void Start()
     {
         LoadOpeningScene();
+
+        eventManager = FindObjectOfType<EventManager>(); //Finding event manager in the scene
+        eventManager.OnLevelRoll += RollToScene; //Subscribe to level roll event
+        eventManager.OnMiniBoss += HandleMiniBossDefeated; //Subscribe to mini boss defeated event
+        eventManager.OnFinalBoss += LoadFinalFight; //Subscribe to final boss event
     }
 
     void LoadOpeningScene()
@@ -49,9 +55,31 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    private void HandleMiniBossDefeated(int miniBossID)
+    {
+        Debug.Log($"Mini boss {miniBossID} defeated");
+
+        if (currentSceneIndex < 10)
+        {
+            RollD10();
+        }
+
+        else
+        {
+            LoadFinalFight();
+        }
+    }
+
     private void LoadFinalFight()
     {
         isInFinalFight = true;
         SceneManager.LoadScene("FinalFight");
+    }
+
+    private void OnDestroy()
+    {
+        eventManager.OnLevelRoll -= RollToScene;
+        eventManager.OnMiniBoss -= HandleMiniBossDefeated;
+        eventManager.OnFinalBoss -= LoadFinalFight;
     }
 }

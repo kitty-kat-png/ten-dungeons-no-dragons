@@ -31,35 +31,30 @@ public class EventManager : MonoBehaviour
 
         if (levelCounter >= 2)
         {
-            TriggerFinalBoss();
+            TriggerFinalBoss(); //Trigger final boss when two levels have been defeated
         }
 
         else
         {
-            RollForNewLevel();
+            RollForNewLevel(); //Otherwise, roll for new level
         }
     }
 
     private void RollForNewLevel()
     {
-        int rollResult = Random.Range(1, 11);
+        int rollResult = Random.Range(1, 11); //Rolling D10 for new level
         
-        while (visitedLevels.Contains(rollResult))
+        while (visitedLevels.Contains(rollResult)) //Ensure level hasn't been visited
         {
             rollResult = Random.Range(1, 11);
         }
 
-        visitedLevels.Add(rollResult);
-        TriggerLevelRoll(rollResult);
-    }
-
-    private void TriggerLevelRoll(int rollResult)
-    {
-        OnLevelRoll?.Invoke(rollResult);
+        visitedLevels.Add(rollResult); //Marking the level as visited
+        OnLevelRoll?.Invoke(rollResult); //Triggering event for rolling level
     }
 
     private void TriggerFinalBoss()
     {
-        OnFinalBoss?.Invoke();
+        OnFinalBoss?.Invoke(); //Trigger final boss event
     }
 }
