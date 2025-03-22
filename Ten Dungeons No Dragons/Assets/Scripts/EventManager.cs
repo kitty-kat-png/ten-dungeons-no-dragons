@@ -40,6 +40,12 @@ public class EventManager : MonoBehaviour
         }
     }
 
+    public void ResetVisitedLevels()
+    {
+        visitedLevels.Clear();
+        levelCounter = 0; //Not needed but added just in case
+    }
+
     private void RollForNewLevel()
     {
         int rollResult = Random.Range(1, 11); //Rolling D10 for new level

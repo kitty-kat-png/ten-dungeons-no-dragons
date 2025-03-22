@@ -9,6 +9,8 @@ public class GameManager : MonoBehaviour
     private bool isInFinalFight = false;
     private EventManager eventManager; //Referencing EventManager
 
+    private HashSet<int> visitedLevels = new HashSet<int>();
+
     void Start()
     {
         LoadOpeningScene();
@@ -17,6 +19,10 @@ public class GameManager : MonoBehaviour
         eventManager.OnLevelRoll += RollToScene; //Subscribe to level roll event
         eventManager.OnMiniBoss += HandleMiniBossDefeated; //Subscribe to mini boss defeated event
         eventManager.OnFinalBoss += LoadFinalFight; //Subscribe to final boss event
+
+        //Finding player health and subscribing to death event
+        PlayerController playerController = FindObjectOfType<PlayerController>();
+        playerController.OnDie += HandlePlayerDeath;
     }
 
     void LoadOpeningScene()
@@ -26,20 +32,23 @@ public class GameManager : MonoBehaviour
 
     public void RollD10()
     {
-        if (!isInFinalFight)
-        {
-            int roll = Random.Range(1, 11);
-            RollToScene(roll);
-        }
+        if (!isInFinalFight) return;
+
+        int roll = Random.Range(1, 11);
+        RollToScene(roll);
     }
 
     private void RollToScene(int roll)
     {
-        if (roll >= 1 && roll <= 10)
+        if (visitedLevels.Contains(roll))
         {
-            SceneManager.LoadScene("Scene" + roll);
-            currentSceneIndex = roll;
+            RollD10();
+            return;
         }
+
+        visitedLevels.Add(roll);
+        SceneManager.LoadScene("Scene" +  roll);
+        currentSceneIndex = roll;
     }
 
     public void DefeatBossAndRoll()
@@ -74,6 +83,25 @@ public class GameManager : MonoBehaviour
     {
         isInFinalFight = true;
         SceneManager.LoadScene("FinalFight");
+
+        PlayerController playerController = FindObjectOfType<PlayerController>();
+        playerController.health = playerController.maxHealth;
+    }
+
+    void HandlePlayerDeath()
+    {
+        ResetGameState();
+        eventManager.ResetVisitedLevels();
+        SceneManager.LoadScene("GameOver");
+    }
+
+    private void ResetGameState()
+    {
+        visitedLevels.Clear();
+        isInFinalFight = false;
+
+        PlayerController playerController = FindObjectOfType<PlayerController>();
+        playerController.health = playerController.maxHealth;
     }
 
     private void OnDestroy()
