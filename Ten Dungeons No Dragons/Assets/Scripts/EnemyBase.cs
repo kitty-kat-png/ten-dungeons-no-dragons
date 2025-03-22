@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using UnityEngine.Events;
 
 public enum EnemyBehaviour
 {
@@ -32,6 +33,11 @@ public class EnemyBase : MonoBehaviour, IHittable
     protected Vector3 currentDestination;
     protected float idleTimer = 0;
     protected Vector2 directionVector = Vector2.up;
+    protected bool dead = false;
+
+
+    public UnityEvent OnDie;
+    public UnityEvent OnHit;
 
     protected virtual void Awake()
     {
@@ -130,7 +136,18 @@ public class EnemyBase : MonoBehaviour, IHittable
 
     public virtual void Die()
     {
+        dead = true;
+        OnDie.Invoke();
+        StartCoroutine(DieCoroutine());
+    }
+
+    private IEnumerator DieCoroutine()
+    {
+        // do stuff over time before destroying
+        // gonna do this for now
+        transform.Find("Audio").SetParent(transform.parent);
         Destroy(gameObject);
+        yield return null;
     }
 
     protected virtual void Attack()
@@ -151,9 +168,10 @@ public class EnemyBase : MonoBehaviour, IHittable
     public virtual void Hit(int damage)
     {
         health -= damage;
-
-        if(health <= 0)
+        OnHit.Invoke();
+        if(health <= 0 && !dead)
         {
+            OnDie.Invoke();
             Die();
         }
     }

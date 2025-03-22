@@ -1,14 +1,18 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class RangedEnemy : EnemyBase
 {
     public GameObject projectilePrefab;
     public Transform arrowEmitter;
 
+    public UnityEvent OnRanged;
+
     protected override void Attack()
     {
+        OnRanged.Invoke();
         GameObject projectile = Instantiate(projectilePrefab, arrowEmitter.position, arrowEmitter.rotation);
     }
 

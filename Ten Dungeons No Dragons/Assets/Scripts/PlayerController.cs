@@ -20,6 +20,8 @@ public class PlayerController : MonoBehaviour, IHittable, ISubscriber<UpgradePic
 
     public float moveSpeed = 3f; //Move speed
     public float dashSpeed = 5f; //Dash speed
+    [Range(.8f, 10f)]
+    public float stepFrequency = 2f;
 
     public float dashDuration = 0.5f; //How long the dash lasts
     public float dashCooldown = 3f; //Cooldown between dashes
@@ -57,11 +59,16 @@ public class PlayerController : MonoBehaviour, IHittable, ISubscriber<UpgradePic
     public UnityEvent OnRage;
     public UnityEvent OnSecondWind;
     public UnityEvent OnDodge;
+    public UnityEvent OnStep;
+    public UnityEvent OnHit;
 
     // Private
 
     private Rigidbody2D rb2d;
     private Vector2 movementInput;
+
+    private float stepTimer = 0f;
+    private bool moving = false;
     
     private float meleeTimer = 0f;
     private float rangedTimer = 0f;
@@ -102,10 +109,12 @@ public class PlayerController : MonoBehaviour, IHittable, ISubscriber<UpgradePic
             HandleDash();
             HandleRage();
             HandleSecondWind();
+            HandleSteps();
 
             //Cooldown timers
             if (meleeTimer > 0f) meleeTimer -= Time.deltaTime;
             if (rangedTimer > 0f) rangedTimer -= Time.deltaTime;
+            stepTimer -= Time.deltaTime;
         }
     }
 
@@ -124,9 +133,19 @@ public class PlayerController : MonoBehaviour, IHittable, ISubscriber<UpgradePic
 
     private void HandleMovement()
     {
-
+        moving = false;
         Vector2 move = movementInput * moveSpeed * Time.fixedDeltaTime;
         rb2d.MovePosition(rb2d.position + move);
+        if (move.magnitude > .1f) moving = true;
+    }
+
+    private void HandleSteps()
+    {
+        if(stepTimer <= 0 && moving)
+        {
+            stepTimer = 1f / stepFrequency;
+            OnStep.Invoke();
+        }
     }
 
     private void UpdateDirectionVector()
@@ -214,9 +233,13 @@ public class PlayerController : MonoBehaviour, IHittable, ISubscriber<UpgradePic
     public void Hit(int damage)
     {
         float random = Random.value + .01f; // .01f to make it impossible to dodge if dodgeChance is 0
-        if(random > dodgeChance)
+        if(random > dodgeChance && !dead)
         {
+            OnHit.Invoke();
             TakeDamage(damage);
+        }
+        else
+        {
             OnDodge.Invoke();
         }
     }
