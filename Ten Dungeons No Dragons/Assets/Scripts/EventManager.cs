@@ -1,20 +1,18 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class EventManager : MonoBehaviour
 {
     //Mini Bosses event
-    public delegate void MiniBoss(int miniBossID);
-    public event MiniBoss OnMiniBoss;
+    public UnityEvent<int> OnMiniBoss;
 
     //Level roll event
-    public delegate void LevelRolls(int rollResult);
-    public event LevelRolls OnLevelRoll;
+    public UnityEvent<int> OnLevelRoll;
 
     //Final Boss trigger
-    public delegate void FinalBoss();
-    public event FinalBoss OnFinalBoss;
+    public UnityEvent OnFinalBoss;
 
     // Tracking how many levels player has completed
     private int levelCounter = 0;

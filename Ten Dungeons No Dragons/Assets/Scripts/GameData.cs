@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using UnityEditor;
 using UnityEngine;
 
-public class GameData
+public class GameData : MonoBehaviour
 {
     public static GameData Instance;
 

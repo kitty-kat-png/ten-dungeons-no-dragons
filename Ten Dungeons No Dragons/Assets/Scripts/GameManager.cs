@@ -5,6 +5,8 @@ using UnityEngine.SceneManagement;
 
 public class GameManager : MonoBehaviour
 {
+    public static GameManager Instance;
+
     private int currentSceneIndex = 0;
     private bool isInFinalFight = false;
     private EventManager eventManager; //Referencing EventManager
@@ -15,14 +17,15 @@ public class GameManager : MonoBehaviour
     {
         LoadOpeningScene();
 
-        eventManager = FindObjectOfType<EventManager>(); //Finding event manager in the scene
-        eventManager.OnLevelRoll += RollToScene; //Subscribe to level roll event
-        eventManager.OnMiniBoss += HandleMiniBossDefeated; //Subscribe to mini boss defeated event
-        eventManager.OnFinalBoss += LoadFinalFight; //Subscribe to final boss event
+        eventManager = FindObjectOfType<EventManager>();
+
+        eventManager.OnLevelRoll.AddListener(RollToScene); //Subscribe to level roll event
+        eventManager.OnMiniBoss.AddListener(HandleMiniBossDefeated); //Subscribe to mini boss defeated event
+        eventManager.OnFinalBoss.AddListener(LoadFinalFight); //Subscribe to final boss event
 
         //Finding player health and subscribing to death event
         PlayerController playerController = FindObjectOfType<PlayerController>();
-        playerController.OnDie += HandlePlayerDeath;
+        playerController.OnDie.AddListener(HandlePlayerDeath);
     }
 
     void LoadOpeningScene()
@@ -106,8 +109,8 @@ public class GameManager : MonoBehaviour
 
     private void OnDestroy()
     {
-        eventManager.OnLevelRoll -= RollToScene;
-        eventManager.OnMiniBoss -= HandleMiniBossDefeated;
-        eventManager.OnFinalBoss -= LoadFinalFight;
+        eventManager.OnLevelRoll.RemoveListener(RollToScene);
+        eventManager.OnMiniBoss.RemoveListener(HandleMiniBossDefeated);
+        eventManager.OnFinalBoss.RemoveListener(LoadFinalFight);
     }
 }
