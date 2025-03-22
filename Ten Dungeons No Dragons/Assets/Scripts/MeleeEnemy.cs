@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using Unity.IO.LowLevel.Unsafe;
 using UnityEngine;
+using UnityEngine.Events;
 
 public class MeleeEnemy : EnemyBase
 {
@@ -10,8 +11,11 @@ public class MeleeEnemy : EnemyBase
     public float meleeDistance = 1f;
     public float meleeRadius = 1f;
 
+    public UnityEvent OnMelee;
+
     protected override void Attack()
     {
+        OnMelee.Invoke();
         Debug.Log(gameObject.name +  " Melee Attack");
         Collider2D[] colliders = Physics2D.OverlapCircleAll((Vector2)transform.position + (directionVector * meleeDistance), meleeRadius); //Melee attack range
 
