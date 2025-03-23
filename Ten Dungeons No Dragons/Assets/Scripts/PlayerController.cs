@@ -249,7 +249,10 @@ public class PlayerController : MonoBehaviour, IHittable, ISubscriber<UpgradePic
         Debug.Log("Player died");
         dead = true;
         PubSub.PubSub.Instance.PostEvent(new PlayerDiedEvent());
-        OnDie?.Invoke();
+        if (health <=0)
+        {
+            OnDie?.Invoke();
+        }
     }
 
     private void HandleMeleeAttack()
