@@ -44,7 +44,10 @@ public class EnemyBase : MonoBehaviour, IHittable
         navMeshAgent.updateRotation = false;
         navMeshAgent.updateUpAxis = false;
         navMeshAgent.speed = patrolSpeed;
-        currentDestination = patrolPoints[0].position;
+        if (patrolPoints.Count > 0)
+            currentDestination = patrolPoints[0].position;
+        else
+            currentDestination = transform.position;
     }
 
     protected virtual void Start()
@@ -88,9 +91,11 @@ public class EnemyBase : MonoBehaviour, IHittable
         if (Vector2.Distance(transform.position, currentDestination) < .01f)
         {
             // destination reached
-
-            currentPatrolIndex = (++currentPatrolIndex % patrolPoints.Count);
-            currentDestination = patrolPoints[currentPatrolIndex].position;
+            if (patrolPoints.Count > 0)
+            {
+                currentPatrolIndex = (++currentPatrolIndex % patrolPoints.Count);
+                currentDestination = patrolPoints[currentPatrolIndex].position;
+            }
         }
 
         if(CheckChaseRange())

@@ -29,7 +29,29 @@ public class D10_UIManager : MonoBehaviour
 
     public void OnContinueClicked()
     {
-        // replace this once we have a convention
-        SceneManager.LoadScene("Testing");
+        switch (currentD10Number / 2)
+        {
+            case 1:
+            case 2:
+                SceneManager.LoadScene("Forest Dungeon");
+                break;
+            case 3:
+            case 4:
+                SceneManager.LoadScene("Cave Dungeon");
+                break;
+            case 5:
+            case 6:
+                SceneManager.LoadScene("Dungeon Dungeon");
+                break;
+            case 7:
+            case 8:
+                SceneManager.LoadScene("Desert Dungeon");
+                break;
+            case 9:
+            case 10:
+                SceneManager.LoadScene("Underwater Dungeon");
+                break;
+
+        }
     }
 }

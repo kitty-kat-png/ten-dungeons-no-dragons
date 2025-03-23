@@ -9,3 +9,5 @@ public class UpgradePickedUp : BaseEvent
 {
     public UpgradeType upgradeType;
 }
+
+public class PlayerDiedEvent : BaseEvent { }

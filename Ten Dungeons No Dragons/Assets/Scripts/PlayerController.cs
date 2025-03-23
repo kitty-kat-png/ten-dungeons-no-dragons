@@ -248,6 +248,7 @@ public class PlayerController : MonoBehaviour, IHittable, ISubscriber<UpgradePic
     {
         Debug.Log("Player died");
         dead = true;
+        PubSub.PubSub.Instance.PostEvent(new PlayerDiedEvent());
         OnDie?.Invoke();
     }
 
