@@ -148,6 +148,7 @@ MonoBehaviour:
   pitchRandomness: 0.197
   volumeRandomness: 0.18
   avoidRepeatingLast: 1
+  playOnAwake: 0
   audioSource: {fileID: 6371558629974969809}
 --- !u!1 &511666866146193206
 GameObject:
@@ -296,6 +297,7 @@ MonoBehaviour:
   pitchRandomness: 0.197
   volumeRandomness: 0.18
   avoidRepeatingLast: 0
+  playOnAwake: 0
   audioSource: {fileID: 4232282530241322103}
 --- !u!1 &1846004251054211842
 GameObject:
@@ -509,7 +511,7 @@ CircleCollider2D:
   m_UsedByComposite: 0
   m_Offset: {x: 0, y: 0}
   serializedVersion: 2
-  m_Radius: 0.5
+  m_Radius: 0.45
 --- !u!1 &2760514336835520146
 GameObject:
   m_ObjectHideFlags: 0
@@ -658,6 +660,7 @@ MonoBehaviour:
   pitchRandomness: 0.197
   volumeRandomness: 0.18
   avoidRepeatingLast: 1
+  playOnAwake: 0
   audioSource: {fileID: 6711525236172041540}
 --- !u!1 &2769866489933217195
 GameObject:
@@ -956,6 +959,7 @@ MonoBehaviour:
   pitchRandomness: 0.197
   volumeRandomness: 0.18
   avoidRepeatingLast: 1
+  playOnAwake: 0
   audioSource: {fileID: 5261849069374562539}
 --- !u!1 &7342416890445336017
 GameObject:
@@ -1186,4 +1190,5 @@ MonoBehaviour:
   pitchRandomness: 0.197
   volumeRandomness: 0.18
   avoidRepeatingLast: 1
+  playOnAwake: 0
   audioSource: {fileID: 6544245473303196427}

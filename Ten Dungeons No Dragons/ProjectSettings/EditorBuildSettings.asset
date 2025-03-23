@@ -5,7 +5,7 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/Game.unity
     guid: 2cda990e2423bbf4892e6590ba056729
   - enabled: 1
@@ -17,7 +17,22 @@ EditorBuildSettings:
   - enabled: 1
     path: Assets/Scenes/D10 Scene.unity
     guid: 0eb43652fa655da41a538c0e2bca9fce
-  - enabled: 1
+  - enabled: 0
     path: Assets/Scenes/Testing.unity
     guid: 6a06b284525cfb949b8b6297873c7e9e
+  - enabled: 1
+    path: Assets/Scenes/Dungeons/Castle Scene.unity
+    guid: 05161cb6fa7fe8c428918219abb6ad5a
+  - enabled: 1
+    path: Assets/Scenes/Dungeons/Cave Dungeon.unity
+    guid: 4697d9fe50a880e4f9873db529641592
+  - enabled: 1
+    path: Assets/Scenes/Dungeons/Desert Dungeon.unity
+    guid: b2d41bd8ef118de4e885e400021aeeab
+  - enabled: 1
+    path: Assets/Scenes/Dungeons/Dungeon Dungeon.unity
+    guid: cc27a25f5ec15ec43a3a1f1d08eb2596
+  - enabled: 1
+    path: Assets/Scenes/Dungeons/Forest Dungeon.unity
+    guid: 160f15b2393d06943a1f380f89ce26cf
   m_configObjects: {}
